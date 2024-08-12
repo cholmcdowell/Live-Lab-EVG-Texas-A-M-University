@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Information</title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+</head>
+<body>
+
+<p style="color: green"><%= notice %></p>
+
+<h1 style="text-align: center"><%= @game.game_title %></h1>
+<% if @game.image %>
+  <img src="<%= @game.image %>" alt="Game Image" style="max-width: 1200px; display: block; margin: 0 auto;">
+<% end %>
+
+<div class="games-container">
+  <%= link_to "Visit this Game", @game.url, class:  "custom-button button-1" %>
+  <%= button_to "Save", saved_games_path(game_id: @game.id), method: :post, class: "custom-button button-2", id: "save_button_#{@game.id}" %>
+</div>
+
+<div class="games-container">
+  <table>
+    <% ignored_attributes = ["id", "researcher", "included", "exclusion_notes"] %>
+
+    <% @game.attributes.each do |attribute, value| %>
+      <tr>
+        <% if ignored_attributes.exclude?(attribute) %>
+          <th><%= attribute.titleize %></th>
+          <% if attribute == "image" %>
+            <td><a href="<%= value %>"><img src="<%= value %>" alt="Game Image" style="max-width: 1000px" ></a></td>
+          <% else %>
+            <td><%= value %></td>
+          <% end %>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<div class="container1">
+  <% if user_signed_in? %>
+    <% if current_user.admin? || current_user.moderator? %>
+      <%= link_to "Edit this game", edit_game_path(@game), class:  "custom-button button-1" %>
+    <% end %>
+  <% end %>
+
+  <% if user_signed_in? %>
+    <% if current_user.admin? %>
+    <%= button_to "Destroy this game", @game, method: :delete, class:  "custom-button btn-danger",
+                  data: { turbo_confirm: "Are you sure to delete?", disable_with: "Processing..."} %>
+    <% end %>
+  <% end %>
+
+  <%= link_to "Back to games", games_path , class:  "custom-button button-1" %>
+</div>
+
+</body>
+</html>
